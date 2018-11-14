@@ -372,25 +372,46 @@ cpdef brnb_node_res fit_Sugeno_L1_brnb_node(np.double_t[:] hl, np.double_t[:] hu
 
 
 
+DEFAULT_LOWER_BOUND = np.array([np.nan])
+DEFAULT_UPPER_BOUND = np.array([np.nan])
 
-def fit_Sugeno_L1_brnb(np.ndarray[np.double_t,ndim=2] x, np.ndarray[np.double_t] y, np.uint_t maxiter=1_000_000):
+
+
+def fit_Sugeno_L1_brnb(np.ndarray[np.double_t,ndim=2] x,
+                       np.ndarray[np.double_t] y,
+                       np.uint_t maxiter=1_000_000,
+                       np.ndarray[np.double_t] hl=DEFAULT_LOWER_BOUND,
+                       np.ndarray[np.double_t] hu=DEFAULT_UPPER_BOUND):
     """
     Finds an L1 best fit for the Sugeno integral
+
 
     Arguments
     =========
 
-    x - an m*n matrix representing m decreasingly (weakly) ordered input samples of length n
+    x
+        an m*n matrix representing m decreasingly (weakly) ordered
+        input samples of length n
 
-    y - a vector of m reference outputs
+    y
+        a vector of m reference outputs
 
-    maxiter - maximal number of iterations to perform
+    maxiter
+        maximal number of iterations to perform
+
+    hl, hu
+        initial lower and upper bounds for the coefficient vector,
+        default to np.r_[[0.0]*(n-1), 1.0] and np.r_[[1.0]*(n-1), 1.0],
+        respectively
+
 
     Returns
     =======
 
-    Dictionary with keys:
-    * f - fitness at the solution
+    A dictionary with the following keys:
+
+    * f - fitness at the solution (sum of absolute differences),
+          divide by m to get MAE
     * h - a vector of n increasing coefficients  with h[n-1]=1
     * niter - number of iterations performed
     * success - False if maxiter reached
@@ -400,9 +421,11 @@ def fit_Sugeno_L1_brnb(np.ndarray[np.double_t,ndim=2] x, np.ndarray[np.double_t]
     cdef np.uint_t i, I0, I1, j, k, niter
     assert y.shape[0] == m
 
-    cdef np.double_t[:] I = np.unique(np.r_[0.0, x.ravel(),y.ravel(), 1.0])
-    cdef np.ndarray[np.double_t] hl = np.r_[[0.0]*(n-1), 1.0]
-    cdef np.ndarray[np.double_t] hu = np.r_[[1.0]*(n-1), 1.0]
+    if np.any(np.isnan(hl)): hl = np.r_[[0.0]*(n-1), 1.0]
+    if np.any(np.isnan(hu)): hu = np.r_[[1.0]*(n-1), 1.0]
+    assert hl.shape[0] == n
+    assert hu.shape[0] == n
+    cdef np.double_t[:] I = np.unique(np.r_[hl, x.ravel(),y.ravel(), hu])
     cdef np.ndarray[np.double_t] hl1, hu1, hl2, hu2
     fit_Sugeno_L1_improve_upper_bound(hu, hl, x, y, I) # modifies h_upper in-place
     fit_Sugeno_L1_improve_lower_bound(hl, hu, x, y, I) # modifies h_lower in-place
