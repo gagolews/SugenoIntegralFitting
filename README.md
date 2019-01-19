@@ -2,8 +2,8 @@ Fitting Sugeno Integrals to Data
 ================================
 
 Marek Gagolewski, Simon James, and Gleb Beliakov,
-*Supervised Learning to Aggregate Data with the Sugeno Integral*,
-2018.
+Supervised Learning to Aggregate Data with the Sugeno Integral,
+*IEEE Transactions on Fuzzy Systems, to appear*, 2019.
 
 A Cython implementation of the exact branch-refine-and-bound-type algorithm
 for fitting Sugeno integrals with respect to symmetric capacities
