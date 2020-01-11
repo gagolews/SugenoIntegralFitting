@@ -14,6 +14,9 @@ minimizing L1 error, particularly suitable for the case of ordinal data.
 
 Main function: fit_Sugeno_L1_brnb()
 
+See Gagolewski M., James S., Beliakov G., 
+Supervised learning to aggregate data with the Sugeno integral,
+IEEE Transactions on Fuzzy Systems 27(4), 2019, pp. 810-815. doi:10.1109/TFUZZ.2019.2895565
 
 Cython code Copyright (C) 2018 Marek.Gagolewski.com
 All rights reserved.
